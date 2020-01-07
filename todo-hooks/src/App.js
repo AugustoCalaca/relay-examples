@@ -22,30 +22,36 @@ import {
   Network,
   RecordSource,
   Store,
+  Observable,
   type RequestNode,
   type Variables,
 } from 'relay-runtime';
 
+import fetchMultipart from 'fetch-multipart-graphql';
+
 import TodoApp from './components/TodoApp';
-import type {AppQueryResponse, AppQuery} from './__generated__/AppQuery.graphql';
+import type { AppQueryResponse, AppQuery } from './__generated__/AppQuery.graphql';
 
-async function fetchQuery(
-  operation: RequestNode,
-  variables: Variables,
-): Promise<{}> {
-
-  const response = await fetch('/graphql', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query: operation.text,
-      variables,
-    }),
+function fetchQuery(operation: RequestNode, variables: Variables,) {
+  return Observable.create(sink => {
+    fetchMultipart('/graphql', {
+      applyToPrevious: false,
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      
+      body: JSON.stringify({
+        query: operation.text,
+        variables,
+      }),
+      
+      credentials: 'same-origin',
+      onNext: json => sink.next(json),
+      onError: err => sink.error(err),
+      onComplete: () => sink.complete(),
+    });
   });
-
-  return response.json();
 }
 
 const modernEnvironment = new Environment({
@@ -69,7 +75,11 @@ const App = () => {
     { fetchPolicy: 'store-or-network' }
   );
 
-  return <TodoApp user={data.user} />
+  return (
+    <React.Suspense fallback={<div>loading todo app...</div>}>
+      <TodoApp user={data.user} />
+    </React.Suspense>
+  )
 };
 
 

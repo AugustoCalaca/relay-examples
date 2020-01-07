@@ -45,8 +45,6 @@ const TodoApp = (props: Props) => {
   
   const handleTextInputSave = useCallback(
     (text: string) => {
-      console.log('text input: ', text);
-      console.log('userID input: ', data.userId);
       addTodo({
         variables: {
           input: {
@@ -66,14 +64,13 @@ const TodoApp = (props: Props) => {
     [addTodo],
   );
 
-  console.log('total count: ', data.totalCount);
   const hasTodos = data.totalCount > 0;
 
   return (
     <div>
       <section className="todoapp">
         <header className="header">
-          <h1>Todos</h1>
+          <h1>Todo-Hooks</h1>
 
           <TodoTextInput
             className="new-todo"
@@ -82,8 +79,15 @@ const TodoApp = (props: Props) => {
           />
         </header>
 
-        <TodoList user={data} />
-        {hasTodos && <TodoListFooter user={data} />}
+        <React.Suspense fallback={<div>loading todo list...</div>}>
+          <TodoList user={data} />
+        </React.Suspense>
+
+        {hasTodos && (
+          <React.Suspense fallback={<div>loadin footer...</div>}>
+            <TodoListFooter user={data} />
+          </React.Suspense>
+        )}
       </section>
 
       <footer className="info">

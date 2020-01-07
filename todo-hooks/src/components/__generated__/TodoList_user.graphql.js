@@ -18,6 +18,7 @@ export type TodoList_user = {|
     +edges: ?$ReadOnlyArray<?{|
       +node: ?{|
         +id: string,
+        +complete: boolean,
         +$fragmentRefs: Todo_todo$ref,
       |}
     |}>
@@ -58,7 +59,8 @@ return {
         "direction": "forward",
         "path": [
           "todos"
-        ]
+        ],
+        "stream": true
       }
     ]
   },
@@ -74,69 +76,86 @@ return {
       "plural": false,
       "selections": [
         {
-          "kind": "LinkedField",
-          "alias": null,
-          "name": "edges",
-          "storageKey": null,
-          "args": null,
-          "concreteType": "TodoEdge",
-          "plural": true,
+          "kind": "Stream",
           "selections": [
             {
               "kind": "LinkedField",
               "alias": null,
-              "name": "node",
+              "name": "edges",
               "storageKey": null,
               "args": null,
-              "concreteType": "Todo",
-              "plural": false,
+              "concreteType": "TodoEdge",
+              "plural": true,
               "selections": [
-                (v0/*: any*/),
+                {
+                  "kind": "LinkedField",
+                  "alias": null,
+                  "name": "node",
+                  "storageKey": null,
+                  "args": null,
+                  "concreteType": "Todo",
+                  "plural": false,
+                  "selections": [
+                    (v0/*: any*/),
+                    {
+                      "kind": "ScalarField",
+                      "alias": null,
+                      "name": "complete",
+                      "args": null,
+                      "storageKey": null
+                    },
+                    {
+                      "kind": "ScalarField",
+                      "alias": null,
+                      "name": "__typename",
+                      "args": null,
+                      "storageKey": null
+                    },
+                    {
+                      "kind": "FragmentSpread",
+                      "name": "Todo_todo",
+                      "args": null
+                    }
+                  ]
+                },
                 {
                   "kind": "ScalarField",
                   "alias": null,
-                  "name": "__typename",
+                  "name": "cursor",
                   "args": null,
                   "storageKey": null
-                },
-                {
-                  "kind": "FragmentSpread",
-                  "name": "Todo_todo",
-                  "args": null
                 }
               ]
-            },
-            {
-              "kind": "ScalarField",
-              "alias": null,
-              "name": "cursor",
-              "args": null,
-              "storageKey": null
             }
           ]
         },
         {
-          "kind": "LinkedField",
-          "alias": null,
-          "name": "pageInfo",
-          "storageKey": null,
-          "args": null,
-          "concreteType": "PageInfo",
-          "plural": false,
+          "kind": "Defer",
           "selections": [
             {
-              "kind": "ScalarField",
+              "kind": "LinkedField",
               "alias": null,
-              "name": "endCursor",
+              "name": "pageInfo",
+              "storageKey": null,
               "args": null,
-              "storageKey": null
-            },
-            {
-              "kind": "ScalarField",
-              "alias": null,
-              "name": "hasNextPage",
-              "args": null,
-              "storageKey": null
+              "concreteType": "PageInfo",
+              "plural": false,
+              "selections": [
+                {
+                  "kind": "ScalarField",
+                  "alias": null,
+                  "name": "endCursor",
+                  "args": null,
+                  "storageKey": null
+                },
+                {
+                  "kind": "ScalarField",
+                  "alias": null,
+                  "name": "hasNextPage",
+                  "args": null,
+                  "storageKey": null
+                }
+              ]
             }
           ]
         }
@@ -173,5 +192,5 @@ return {
 };
 })();
 // prettier-ignore
-(node/*: any*/).hash = '68a187cfa8a87ecd7432a02266b0f15a';
+(node/*: any*/).hash = '292149a9726febe743bd619a986a4c66';
 module.exports = node;

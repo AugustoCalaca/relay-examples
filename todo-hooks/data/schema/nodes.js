@@ -72,6 +72,13 @@ const GraphQLTodo = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: (todo: Todo): boolean => todo.complete,
     },
+    slowField: {
+      type: GraphQLString,
+      resolve: async () => {
+        await new Promise(res => setTimeout(res, 2500));
+        return 'slow field';
+      },
+    },
   },
   interfaces: [nodeInterface],
 });
@@ -102,13 +109,21 @@ const GraphQLUser = new GraphQLObjectType({
         ...connectionArgs,
       },
       // eslint-disable-next-line flowtype/require-parameter-type
-      resolve: (root: {}, {status, after, before, first, last}) =>
-        connectionFromArray([...getTodos(status)], {
+      resolve: (root: {}, {status, after, before, first, last}) => {
+        const result = connectionFromArray([...getTodos(status)], {
           after,
           before,
           first,
           last,
-        }),
+        });
+        
+        result.edges = result.edges.map(async (edge, index) => {
+          await new Promise(res => setTimeout(res, (index + 1) * 500));
+          return edge;
+        });
+        
+        return result;
+      }
     },
     totalCount: {
       type: new GraphQLNonNull(GraphQLInt),

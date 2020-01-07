@@ -12,7 +12,8 @@
  */
 
 import express from 'express';
-import graphQLHTTP from 'express-graphql';
+import bodyParser from 'body-parser';
+import { graphql } from 'graphql';
 import path from 'path';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
@@ -53,14 +54,31 @@ const app: WebpackDevServer = new WebpackDevServer(compiler, {
 // Serve static resources
 app.use('/', express.static(path.resolve(__dirname, 'public')));
 
-// Setup GraphQL endpoint
-app.use(
-  '/graphql',
-  graphQLHTTP({
-    schema: schema,
-    pretty: true,
-  }),
-);
+function sendJsonContent(res, obj) {
+  const json = JSON.stringify(obj, null, 2);
+  res.write(
+    `\r\n---\r\nContent-Type: application/json\r\nContent-Length: ${json.length}\r\n\r\n${json}\r\n`,
+  );
+}
+
+app.use('/graphql', bodyParser.json(), async (req, res, next) => {
+  const { patches, ...initial } = await graphql({
+    schema,
+    source: req.body.query,
+    variableValues: req.body.variables,
+  });
+  if (!patches) {
+    res.json(initial);
+    return;
+  }
+  res.set('content-type', 'multipart/mixed; boundary="-"');
+  sendJsonContent(res, initial);
+  for await (const patch of patches) {
+    sendJsonContent(res, patch);
+  }
+  res.write(`\r\n-----\r\n`);
+  res.end();
+});
 
 app.listen(APP_PORT, () => {
   console.log(`App is now running on http://localhost:${APP_PORT}`);

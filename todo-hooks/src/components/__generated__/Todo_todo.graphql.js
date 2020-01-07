@@ -8,6 +8,7 @@
 
 /*::
 import type { ReaderFragment } from 'relay-runtime';
+type TodoSlowField$ref = any;
 import type { FragmentReference } from "relay-runtime";
 declare export opaque type Todo_todo$ref: FragmentReference;
 declare export opaque type Todo_todo$fragmentType: Todo_todo$ref;
@@ -15,6 +16,7 @@ export type Todo_todo = {|
   +complete: boolean,
   +id: string,
   +text: string,
+  +$fragmentRefs: TodoSlowField$ref,
   +$refType: Todo_todo$ref,
 |};
 export type Todo_todo$data = Todo_todo;
@@ -53,9 +55,19 @@ const node/*: ReaderFragment*/ = {
       "name": "text",
       "args": null,
       "storageKey": null
+    },
+    {
+      "kind": "Defer",
+      "selections": [
+        {
+          "kind": "FragmentSpread",
+          "name": "TodoSlowField",
+          "args": null
+        }
+      ]
     }
   ]
 };
 // prettier-ignore
-(node/*: any*/).hash = '1f979eb84ff026fe8a89323dd533d1fc';
+(node/*: any*/).hash = 'ddfdb61b3ffccb26fdea8cc65c30393c';
 module.exports = node;
