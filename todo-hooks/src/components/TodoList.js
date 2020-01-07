@@ -20,7 +20,6 @@ import { useFragment, graphql } from 'react-relay/hooks';
 import type { TodoList_user } from './__generated__/TodoList_user.graphql';
 import type { TodoApp_user } from './__generated__/TodoApp_user.graphql';
 
-
 type Todos = $NonMaybeType<$ElementType<TodoList_user, 'todos'>>;
 type Edges = $NonMaybeType<$ElementType<Todos, 'edges'>>;
 type Edge = $NonMaybeType<$ElementType<Edges, number>>;
@@ -36,10 +35,11 @@ const TodoList = (props: Props) => {
       fragment TodoList_user on User {
         todos(
           first: 2147483647 # max GraphQLInt
-        ) @connection(key: "TodoList_todos") {
+        ) @stream_connection(key: "TodoList_todos", initial_count: 0) {
           edges {
             node {
               id
+              complete
               ...Todo_todo
             }
           }
@@ -55,6 +55,7 @@ const TodoList = (props: Props) => {
   );
   
   const { todos, totalCount, completedCount, userId } = data;
+
   const [_, markallTodos] = useMutation(MarkAllTodosMutation);
 
   const handleMarkAllChange = useCallback(

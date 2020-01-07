@@ -14,14 +14,16 @@
 import ChangeTodoStatusMutation, { changeTodoStatusOptimisticResponse } from '../mutations/ChangeTodoStatusMutation';
 import RemoveTodoMutation, { removeTodoSharedUpdater } from '../mutations/RemoveTodoMutation';
 import RenameTodoMutation, { renameTodoOptimisticResponse } from '../mutations/RenameTodoMutation';
+import TodoSlowField from './TodoSlowField';
 
 import useMutation from '../mutations/useMutation';
 import TodoTextInput from './TodoTextInput';
 
 import React, { useState, useCallback } from 'react';
 import { useFragment, graphql } from 'react-relay/hooks';
-import type { RecordSourceSelectorProxy } from 'relay-runtime';
+
 import classnames from 'classnames';
+import type { RecordSourceSelectorProxy } from 'relay-runtime';
 import type { Todo_todo } from './__generated__/Todo_todo.graphql';
 import type { Todo_user } from './__generated__/Todo_user.graphql';
 
@@ -34,6 +36,7 @@ const Todo = (props: Props) => {
   const todo = useFragment<Todo_todo>(
     graphql`
       fragment Todo_todo on Todo {
+        ...TodoSlowField @defer
         complete
         id
         text
@@ -90,7 +93,6 @@ const Todo = (props: Props) => {
   const handleTextInputSave = useCallback( 
     (text: string) => {
       setIsEditing(false);
-      console.log('call handle rename');
 
       renameTodo({
         variables: {
@@ -144,8 +146,12 @@ const Todo = (props: Props) => {
           onChange={handleCompleteChange}
           type="checkbox"
         />
-  
-        <label onDoubleClick={handleLabelDoubleClick}>{todo.text}</label>
+        <label onDoubleClick={handleLabelDoubleClick}>
+          {todo.text}
+          <React.Suspense fallback={<div>loading slow field...</div>}>
+            <TodoSlowField todo={todo} />
+          </React.Suspense>
+        </label>
         <button className="destroy" onClick={handleDestroyClick} />
       </div>
 
@@ -164,20 +170,3 @@ const Todo = (props: Props) => {
 };
 
 export default Todo;
-// export default createFragmentContainer(Todo, {
-//   todo: graphql`
-//     fragment Todo_todo on Todo {
-//       complete
-//       id
-//       text
-//     }
-//   `,
-//   user: graphql`
-//     fragment Todo_user on User {
-//       id
-//       userId
-//       totalCount
-//       completedCount
-//     }
-//   `,
-// });

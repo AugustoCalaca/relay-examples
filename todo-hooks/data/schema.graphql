@@ -139,6 +139,7 @@ type Todo implements Node {
   id: ID!
   text: String!
   complete: Boolean!
+  slowField: String
 }
 
 """A connection to a list of items."""

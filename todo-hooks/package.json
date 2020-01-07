@@ -10,6 +10,7 @@
     "classnames": "2.2.6",
     "express": "^4.16.4",
     "express-graphql": "^0.9.0",
+    "fetch-multipart-graphql": "^1.4.0",
     "graphql": "file:.yalc/graphql",
     "graphql-relay": "^0.6.0",
     "prop-types": "^15.7.2",

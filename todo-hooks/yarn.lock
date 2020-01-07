@@ -2848,6 +2848,11 @@ fbjs@^1.0.0:
     setimmediate "^1.0.5"
     ua-parser-js "^0.7.18"
 
+fetch-multipart-graphql@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/fetch-multipart-graphql/-/fetch-multipart-graphql-1.4.0.tgz#9883693cc28fbab4f65e8d0a2a7b8d9d9fcf7fc3"
+  integrity sha512-Be+OwBFN6mPOD+MDkQFRhTGhQsjEeDTGejFphcmACEZ0Bz5Iu+XjfXSnHT1IZbfS5MtdvdjtrpHlTTb1CsG+jA==
+
 figgy-pudding@^3.5.1:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/figgy-pudding/-/figgy-pudding-3.5.1.tgz#862470112901c727a0e495a80744bd5baa1d6790"

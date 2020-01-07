@@ -1,6 +1,6 @@
 /**
  * @flow
- * @relayHash 2b1382dda7656c225060510e9bdb3bb3
+ * @relayHash fdfa62782e6420bfcb0a34ed110d2ea0
  */
 
 /* eslint-disable */
@@ -66,17 +66,20 @@ fragment TodoListFooter_user on User {
 
 fragment TodoList_user on User {
   todos(first: 2147483647) {
-    edges {
+    edges @stream(label: "TodoList_user$stream$TodoList_todos", initial_count: 0) {
       node {
         id
+        complete
         ...Todo_todo
         __typename
       }
       cursor
     }
-    pageInfo {
-      endCursor
-      hasNextPage
+    ... on TodoConnection @defer(label: "TodoList_user$defer$TodoList_todos$pageInfo") {
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
     }
   }
   id
@@ -86,7 +89,12 @@ fragment TodoList_user on User {
   ...Todo_user
 }
 
+fragment TodoSlowField on Todo {
+  slowField
+}
+
 fragment Todo_todo on Todo {
+  ...TodoSlowField @defer(label: "Todo_todo$defer$TodoSlowField")
   complete
   id
   text
@@ -129,7 +137,53 @@ v3 = [
     "name": "first",
     "value": 2147483647
   }
-];
+],
+v4 = {
+  "kind": "ScalarField",
+  "alias": null,
+  "name": "complete",
+  "args": null,
+  "storageKey": null
+},
+v5 = {
+  "kind": "ScalarField",
+  "alias": null,
+  "name": "__typename",
+  "args": null,
+  "storageKey": null
+},
+v6 = {
+  "kind": "ScalarField",
+  "alias": null,
+  "name": "cursor",
+  "args": null,
+  "storageKey": null
+},
+v7 = {
+  "kind": "LinkedField",
+  "alias": null,
+  "name": "pageInfo",
+  "storageKey": null,
+  "args": null,
+  "concreteType": "PageInfo",
+  "plural": false,
+  "selections": [
+    {
+      "kind": "ScalarField",
+      "alias": null,
+      "name": "endCursor",
+      "args": null,
+      "storageKey": null
+    },
+    {
+      "kind": "ScalarField",
+      "alias": null,
+      "name": "hasNextPage",
+      "args": null,
+      "storageKey": null
+    }
+  ]
+};
 return {
   "kind": "Request",
   "fragment": {
@@ -221,61 +275,79 @@ return {
                     "plural": false,
                     "selections": [
                       (v2/*: any*/),
-                      {
-                        "kind": "ScalarField",
-                        "alias": null,
-                        "name": "complete",
-                        "args": null,
-                        "storageKey": null
-                      },
-                      {
-                        "kind": "ScalarField",
-                        "alias": null,
-                        "name": "__typename",
-                        "args": null,
-                        "storageKey": null
-                      },
-                      {
-                        "kind": "ScalarField",
-                        "alias": null,
-                        "name": "text",
-                        "args": null,
-                        "storageKey": null
-                      }
+                      (v4/*: any*/),
+                      (v5/*: any*/)
                     ]
                   },
+                  (v6/*: any*/)
+                ]
+              },
+              (v7/*: any*/),
+              {
+                "if": null,
+                "kind": "Stream",
+                "label": "TodoList_user$stream$TodoList_todos",
+                "metadata": null,
+                "selections": [
                   {
-                    "kind": "ScalarField",
+                    "kind": "LinkedField",
                     "alias": null,
-                    "name": "cursor",
+                    "name": "edges",
+                    "storageKey": null,
                     "args": null,
-                    "storageKey": null
+                    "concreteType": "TodoEdge",
+                    "plural": true,
+                    "selections": [
+                      {
+                        "kind": "LinkedField",
+                        "alias": null,
+                        "name": "node",
+                        "storageKey": null,
+                        "args": null,
+                        "concreteType": "Todo",
+                        "plural": false,
+                        "selections": [
+                          (v2/*: any*/),
+                          (v4/*: any*/),
+                          {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "text",
+                            "args": null,
+                            "storageKey": null
+                          },
+                          (v5/*: any*/),
+                          {
+                            "if": null,
+                            "kind": "Defer",
+                            "label": "Todo_todo$defer$TodoSlowField",
+                            "metadata": null,
+                            "selections": [
+                              {
+                                "kind": "ScalarField",
+                                "alias": null,
+                                "name": "slowField",
+                                "args": null,
+                                "storageKey": null
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      (v6/*: any*/)
+                    ]
                   }
                 ]
               },
               {
-                "kind": "LinkedField",
-                "alias": null,
-                "name": "pageInfo",
-                "storageKey": null,
-                "args": null,
-                "concreteType": "PageInfo",
-                "plural": false,
+                "if": null,
+                "kind": "Defer",
+                "label": "TodoList_user$defer$TodoList_todos$pageInfo",
+                "metadata": {
+                  "fragmentTypeCondition": "TodoConnection"
+                },
                 "selections": [
-                  {
-                    "kind": "ScalarField",
-                    "alias": null,
-                    "name": "endCursor",
-                    "args": null,
-                    "storageKey": null
-                  },
-                  {
-                    "kind": "ScalarField",
-                    "alias": null,
-                    "name": "hasNextPage",
-                    "args": null,
-                    "storageKey": null
-                  }
+                  (v7/*: any*/)
                 ]
               }
             ]
@@ -297,7 +369,7 @@ return {
     "operationKind": "query",
     "name": "AppQuery",
     "id": null,
-    "text": "query AppQuery(\n  $userId: String\n) {\n  user(id: $userId) {\n    ...TodoApp_user\n    id\n  }\n}\n\nfragment TodoApp_user on User {\n  id\n  userId\n  totalCount\n  ...TodoListFooter_user\n  ...TodoList_user\n}\n\nfragment TodoListFooter_user on User {\n  id\n  userId\n  completedCount\n  todos(first: 2147483647) {\n    edges {\n      node {\n        id\n        complete\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  totalCount\n}\n\nfragment TodoList_user on User {\n  todos(first: 2147483647) {\n    edges {\n      node {\n        id\n        ...Todo_todo\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n  userId\n  totalCount\n  completedCount\n  ...Todo_user\n}\n\nfragment Todo_todo on Todo {\n  complete\n  id\n  text\n}\n\nfragment Todo_user on User {\n  id\n  userId\n  totalCount\n  completedCount\n}\n",
+    "text": "query AppQuery(\n  $userId: String\n) {\n  user(id: $userId) {\n    ...TodoApp_user\n    id\n  }\n}\n\nfragment TodoApp_user on User {\n  id\n  userId\n  totalCount\n  ...TodoListFooter_user\n  ...TodoList_user\n}\n\nfragment TodoListFooter_user on User {\n  id\n  userId\n  completedCount\n  todos(first: 2147483647) {\n    edges {\n      node {\n        id\n        complete\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  totalCount\n}\n\nfragment TodoList_user on User {\n  todos(first: 2147483647) {\n    edges @stream(label: \"TodoList_user$stream$TodoList_todos\", initial_count: 0) {\n      node {\n        id\n        complete\n        ...Todo_todo\n        __typename\n      }\n      cursor\n    }\n    ... on TodoConnection @defer(label: \"TodoList_user$defer$TodoList_todos$pageInfo\") {\n      pageInfo {\n        endCursor\n        hasNextPage\n      }\n    }\n  }\n  id\n  userId\n  totalCount\n  completedCount\n  ...Todo_user\n}\n\nfragment TodoSlowField on Todo {\n  slowField\n}\n\nfragment Todo_todo on Todo {\n  ...TodoSlowField @defer(label: \"Todo_todo$defer$TodoSlowField\")\n  complete\n  id\n  text\n}\n\nfragment Todo_user on User {\n  id\n  userId\n  totalCount\n  completedCount\n}\n",
     "metadata": {}
   }
 };

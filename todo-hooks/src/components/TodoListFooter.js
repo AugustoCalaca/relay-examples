@@ -27,7 +27,6 @@ type Props = {|
   +user: TodoListFooter_user,
 |};
 
-// remove fields no used
 const TodoListFooter = (props: Props) => {
   const data = useFragment<TodoListFooter_user>(
     graphql`
@@ -40,7 +39,7 @@ const TodoListFooter = (props: Props) => {
         ) @connection(key: "TodoList_todos") {
           edges {
             node {
-              id
+            id
               complete
             }
           }
@@ -92,7 +91,6 @@ const TodoListFooter = (props: Props) => {
   );
 
   const numRemainingTodos = data.totalCount - data.completedCount;
-  console.log('footer: ', data.totalCount);
 
   return (
     <footer className="footer">
